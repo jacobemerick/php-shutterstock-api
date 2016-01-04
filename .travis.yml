@@ -1,0 +1,12 @@
+language: php
+
+php:
+  - 5.5
+  - 5.6
+  - 7
+
+install:
+  - composer self-update
+  - composer install --dev --no-interaction
+
+script: phpunit --tap --coverage-clover build/logs/clover.xml
