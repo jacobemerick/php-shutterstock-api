@@ -25,13 +25,22 @@ class Client
     }
 
     /**
-     * @param string $query
-     * @param array  $params
-     *
-     * @response Response
+     * @returns Resource\Images
      */
-    public function performSearch($query = '', array $params = [])
+    public function getImages()
     {
-        return $this->guzzle->get('images/search', ['query' => ['query' => $query]]);
+        return new Resource\Images($this);
+    }
+
+    /**
+     * @param string $method
+     * @param string $uri
+     * @param array  $parameters
+     *
+     * @returns Response
+     */
+    public function request($method, $uri, $parameters)
+    {
+        return $this->guzzle->request($method, $uri, $parameters);
     }
 }
