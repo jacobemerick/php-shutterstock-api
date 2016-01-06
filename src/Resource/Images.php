@@ -13,8 +13,8 @@ class Images extends AbstractResource
      */
     public function getList(array $imageIds, $view = '')
     {
-        $query = array_map(function ($id) {
-            return "id={$id}";
+        $query = array_map(function ($imageId) {
+            return "id={$imageId}";
         }, $imageIds);
         if (!empty($view)) {
             array_push($query, "view={$view}");

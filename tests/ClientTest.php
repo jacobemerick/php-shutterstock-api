@@ -34,6 +34,25 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($guzzle, 'guzzle', $client);
     }
 
+    public function testGetImages()
+    {
+        $client = $this->newClient();
+        $expectedImageResource = new Resource\Images($client);
+
+        $imageResource = $client->getImages();
+
+        $this->assertInstanceOf(
+            'Shutterstock\Api\Resource\Images',
+            $imageResource
+        );
+        $this->assertEquals($expectedImageResource, $imageResource);
+    }
+
+    public function testRequest()
+    {
+        // todo w/ mocking, maybe
+    }
+
     protected function newClient()
     {
         return new Client('client_id', 'client_secret');
