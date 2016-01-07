@@ -3,7 +3,11 @@
 namespace Shutterstock\Api;
 
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Response;
 use PHPUnit_Framework_TestCase;
+use ReflectionClass;
 
 class ClientTest extends PHPUnit_Framework_TestCase
 {
@@ -50,11 +54,31 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testRequest()
     {
-        // todo w/ mocking, maybe
+        $responseBody = json_encode(['key' => 'value']);
+        $expectedResponse = new Response(200, [], $responseBody);
+
+        $client = $this->newClientWithMockHandler([$expectedResponse]);
+        $response = $client->request('GET', '/', []);
+
+        $this->assertSame($expectedResponse, $response);
     }
 
     protected function newClient()
     {
         return new Client('client_id', 'client_secret');
+    }
+
+    protected function newClientWithMockHandler(array $responseQueue)
+    {
+        $mock = new MockHandler($responseQueue);
+        $handler = HandlerStack::create($mock);
+        $client = $this->newClient();
+
+        $reflectedClient = new ReflectionClass($client);
+        $reflectedProperty = $reflectedClient->getProperty('guzzle');
+        $reflectedProperty->setAccessible(true);
+
+        $reflectedProperty->setValue($client, new Guzzle(['handler' => $handler]));
+        return $client;
     }
 }
