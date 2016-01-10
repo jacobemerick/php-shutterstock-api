@@ -25,7 +25,7 @@ abstract class AbstractResource
      * @param string $path
      * @param mixed  $query
      *
-     * @returns Response
+     * @return Response
      */
     public function get($path, $query = null)
     {
@@ -41,7 +41,7 @@ abstract class AbstractResource
     /**
      * @param string $path
      *
-     * @returns string
+     * @return string
      */
     protected function buildRelativeUri($path)
     {

@@ -25,7 +25,7 @@ class Client
     }
 
     /**
-     * @returns Resource\Images
+     * @return Resource\Images
      */
     public function getImages()
     {
@@ -37,7 +37,7 @@ class Client
      * @param string $uri
      * @param array  $parameters
      *
-     * @returns Response
+     * @return Response
      */
     public function request($method, $uri, $parameters)
     {
