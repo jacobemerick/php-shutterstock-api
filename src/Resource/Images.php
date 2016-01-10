@@ -37,9 +37,7 @@ class Images extends AbstractResource
             $query['view'] = $view;
         }
 
-        return $this->get("{$imageId}", [
-            'query' => $query,
-        ]);
+        return $this->get("{$imageId}", $query);
     }
 
     /**

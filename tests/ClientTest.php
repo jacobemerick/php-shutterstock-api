@@ -9,7 +9,9 @@ use PHPUnit_Framework_TestCase;
 class ClientTest extends PHPUnit_Framework_TestCase
 {
 
-    use MockClientTrait, MockHandlerTrait, SetMockHandlerTrait;
+    use MockClientTrait,
+        MockHandlerTrait,
+        SetMockHandlerTrait;
 
     public function testIsInstanceOfClient()
     {

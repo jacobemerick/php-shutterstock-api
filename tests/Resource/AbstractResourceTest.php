@@ -4,12 +4,17 @@ namespace Shutterstock\Api\Resource;
 
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
+use Shutterstock\Api\Client;
 use Shutterstock\Api\MockClientTrait;
+use Shutterstock\Api\MockHandlerTrait;
+use Shutterstock\Api\SetMockHandlerTrait;
 
 class AbstractResourceTest extends PHPUnit_Framework_TestCase
 {
 
-    use MockClientTrait;
+    use MockClientTrait,
+        MockHandlerTrait,
+        SetMockHandlerTrait;
 
     public function testIsInstanceOfResource()
     {
@@ -34,31 +39,96 @@ class AbstractResourceTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($client, 'client', $abstractResource);
     }
 
-    public function testGet()
+    /**
+     * @dataProvider dataGet
+     */
+    public function testGet($expectedPath, $path, $query = null)
     {
-        // todo
+        $mockHandler = $this->getMockHandler();
+        $client = $this->getClient();
+        $this->setGuzzleWithMockHandler($client, $mockHandler);
+        $abstractResource = $this->mockAbstractResource($client);
+        $reflectedBuildUriMethod = $this->getAccessibleBuildUriMethod($abstractResource);
+
+        $abstractResource->get($path, $query);
+        $relativeUri = $reflectedBuildUriMethod->invokeArgs($abstractResource, [$path]);
+
+        $lastRequest = $mockHandler->getLastRequest();
+
+        $this->assertEquals('GET', $lastRequest->getMethod());
+        $this->assertEquals($expectedPath, $lastRequest->getUri());
     }
 
-    public function testBuildRelativeUri()
+    public function dataGet()
+    {
+        return [
+            [
+                'expectedPath' => '/test',
+                'path' => 'test',
+            ],
+            [
+                'expectedPath' => '/test-with-query?key=value',
+                'path' => 'test-with-query',
+                'query' => 'key=value',
+            ],
+            [
+                'expectedPath' => '/test-with-query-array?array_key=array_value',
+                'path' => 'test-with-query-array',
+                'query' => ['array_key' => 'array_value'],
+            ]
+        ];
+    }
+
+    /**
+     * @dataProvider dataBuildRelativeUri
+     */
+    public function testBuildRelativeUri($expectedPath, $resourcePath, $path)
     {
         $abstractResource = $this->mockAbstractResource();
         $abstractResource->expects($this->any())
             ->method('getResourcePath')
-            ->will($this->returnValue('test'));
+            ->will($this->returnValue($resourcePath));
+        $reflectedBuildUriMethod = $this->getAccessibleBuildUriMethod($abstractResource);
 
+        $path = $reflectedBuildUriMethod->invokeArgs($abstractResource, [$path]);
+
+        $this->assertEquals($expectedPath, $path);
+    }
+
+    public function dataBuildRelativeUri()
+    {
+        return [
+            [
+                'expectedPath' => 'test',
+                'resourcePath' => 'test',
+                'path' => '',
+            ],
+            [
+                'expectedPath' => 'test/path',
+                'resourcePath' => 'test',
+                'path' => 'path',
+            ],
+        ];
+    }
+
+    protected function getAccessibleBuildUriMethod($abstractResource)
+    {
         $reflectedAbstractResource = new ReflectionClass($abstractResource);
         $reflectedMethod = $reflectedAbstractResource->getMethod('buildRelativeUri');
         $reflectedMethod->setAccessible(true);
 
-        $this->assertEquals('test', $reflectedMethod->invokeArgs($abstractResource, ['']));
-        $this->assertEquals('test/path', $reflectedMethod->invokeArgs($abstractResource, ['path']));
+        return $reflectedMethod;
     }
 
-    protected function mockAbstractResource()
+    protected function mockAbstractResource(Client $client = null)
     {
+        if (is_null($client)) {
+            $client = $this->getClient();
+        }
+
         return $this->getMockForAbstractClass(
             'Shutterstock\Api\Resource\AbstractResource',
-            [$this->getClient()]
+            [$client]
         );
     }
 }
