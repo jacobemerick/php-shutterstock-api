@@ -6,14 +6,14 @@ use PHPUnit_Framework_TestCase;
 use Shutterstock\Api\Client;
 use Shutterstock\Api\MockClientTrait;
 use Shutterstock\Api\MockHandlerTrait;
-use Shutterstock\Api\SetMockHandlerTrait;
+use Shutterstock\Api\ClientWithMockHandlerTrait;
 
 class ImagesTest extends PHPUnit_Framework_TestCase
 {
 
     use MockClientTrait,
         MockHandlerTrait,
-        SetMockHandlerTrait;
+        ClientWithMockHandlerTrait;
 
     /**
      * @dataProvider dataGetList
@@ -22,7 +22,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
-        $this->setGuzzleWithMockHandler($client, $mockHandler);
+        $this->setClientWithMockHandler($client, $mockHandler);
 
         $client->getImages()->getList($imageIds, $view);
         $lastRequest = $mockHandler->getLastRequest();
@@ -61,7 +61,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
-        $this->setGuzzleWithMockHandler($client, $mockHandler);
+        $this->setClientWithMockHandler($client, $mockHandler);
 
         $client->getImages()->getById($imageId, $view);
         $lastRequest = $mockHandler->getLastRequest();
@@ -91,7 +91,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
-        $this->setGuzzleWithMockHandler($client, $mockHandler);
+        $this->setClientWithMockHandler($client, $mockHandler);
 
         $client->getImages()->getCategories();
         $lastRequest = $mockHandler->getLastRequest();

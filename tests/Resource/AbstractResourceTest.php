@@ -7,14 +7,14 @@ use ReflectionClass;
 use Shutterstock\Api\Client;
 use Shutterstock\Api\MockClientTrait;
 use Shutterstock\Api\MockHandlerTrait;
-use Shutterstock\Api\SetMockHandlerTrait;
+use Shutterstock\Api\ClientWithMockHandlerTrait;
 
 class AbstractResourceTest extends PHPUnit_Framework_TestCase
 {
 
     use MockClientTrait,
         MockHandlerTrait,
-        SetMockHandlerTrait;
+        ClientWithMockHandlerTrait;
 
     public function testIsInstanceOfResource()
     {
@@ -46,13 +46,10 @@ class AbstractResourceTest extends PHPUnit_Framework_TestCase
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
-        $this->setGuzzleWithMockHandler($client, $mockHandler);
+        $this->setClientWithMockHandler($client, $mockHandler);
         $abstractResource = $this->mockAbstractResource($client);
-        $reflectedBuildUriMethod = $this->getAccessibleBuildUriMethod($abstractResource);
 
         $abstractResource->get($path, $query);
-        $relativeUri = $reflectedBuildUriMethod->invokeArgs($abstractResource, [$path]);
-
         $lastRequest = $mockHandler->getLastRequest();
 
         $this->assertEquals('GET', $lastRequest->getMethod());

@@ -11,7 +11,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     use MockClientTrait,
         MockHandlerTrait,
-        SetMockHandlerTrait;
+        ClientWithMockHandlerTrait;
 
     public function testIsInstanceOfClient()
     {
@@ -60,7 +60,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     {
         $mockHandler = $this->getMockHandler($response);
         $client = $this->getClient();
-        $this->setGuzzleWithMockHandler($client, $mockHandler);
+        $this->setClientWithMockHandler($client, $mockHandler);
 
         $testResponse = $client->request($method, $uri, $options);
         $lastRequest = $mockHandler->getLastRequest();

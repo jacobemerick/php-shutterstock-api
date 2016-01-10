@@ -7,8 +7,11 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use ReflectionClass;
 
-trait SetMockHandlerTrait {
-    protected function setGuzzleWithMockHandler(Client $client, MockHandler $mockHandler) {
+trait ClientWithMockHandlerTrait
+{
+
+    protected function setClientWithMockHandler(Client $client, MockHandler $mockHandler)
+    {
         $options = [
             'handler' => HandlerStack::create($mockHandler),
         ];
