@@ -3,18 +3,17 @@
 namespace Shutterstock\Api;
 
 use GuzzleHttp\Client as Guzzle;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit_Framework_TestCase;
-use ReflectionClass;
 
 class ClientTest extends PHPUnit_Framework_TestCase
 {
 
+    use MockClientTrait, MockHandlerTrait, SetMockHandlerTrait;
+
     public function testIsInstanceOfClient()
     {
-        $client = $this->newClient();
+        $client = $this->getClient();
 
         $this->assertInstanceOf(
             'Shutterstock\Api\Client',
@@ -40,7 +39,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
     public function testGetImages()
     {
-        $client = $this->newClient();
+        $client = $this->getClient();
         $expectedImageResource = new Resource\Images($client);
 
         $imageResource = $client->getImages();
@@ -57,13 +56,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testRequest($method, $uri, $options, Response $response, $compiledUri)
     {
-        $mockHandler = new MockHandler([$response]);
-        $client = $this->newClient();
-
-        $reflectedClient = new ReflectionClass($client);
-        $reflectedProperty = $reflectedClient->getProperty('guzzle');
-        $reflectedProperty->setAccessible(true);
-        $reflectedProperty->setValue($client, new Guzzle(['handler' => HandlerStack::create($mockHandler)]));
+        $mockHandler = $this->getMockHandler($response);
+        $client = $this->getClient();
+        $this->setGuzzleWithMockHandler($client, $mockHandler);
 
         $testResponse = $client->request($method, $uri, $options);
         $lastRequest = $mockHandler->getLastRequest();
@@ -84,10 +79,5 @@ class ClientTest extends PHPUnit_Framework_TestCase
                 'compiled_uri' => '/test?key=value',
             ],
         ];
-    }
-
-    protected function newClient()
-    {
-        return new Client('client_id', 'client_secret');
     }
 }

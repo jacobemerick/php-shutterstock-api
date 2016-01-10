@@ -4,10 +4,12 @@ namespace Shutterstock\Api\Resource;
 
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
-use Shutterstock\Api\Client;
+use Shutterstock\Api\MockClientTrait;
 
 class AbstractResourceTest extends PHPUnit_Framework_TestCase
 {
+
+    use MockClientTrait;
 
     public function testIsInstanceOfResource()
     {
@@ -21,7 +23,7 @@ class AbstractResourceTest extends PHPUnit_Framework_TestCase
 
     public function testConstructSetsClient()
     {
-        $client = $this->newClient();
+        $client = $this->getClient();
         $abstractResource = $this->mockAbstractResource();
 
         $this->assertAttributeInstanceOf(
@@ -56,12 +58,7 @@ class AbstractResourceTest extends PHPUnit_Framework_TestCase
     {
         return $this->getMockForAbstractClass(
             'Shutterstock\Api\Resource\AbstractResource',
-            [$this->newClient()]
+            [$this->getClient()]
         );
-    }
-
-    protected function newClient()
-    {
-        return new Client('client_id', 'client_secret');
     }
 }
