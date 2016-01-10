@@ -6,6 +6,8 @@ class Images extends AbstractResource
 {
 
     /**
+     * @link https://developers.shutterstock.com/api/v2/images/search
+     *
      * @param array $query
      *
      * @return Response
@@ -16,7 +18,9 @@ class Images extends AbstractResource
     }
 
     /**
-     * @param string $langauge
+     * @link https://developers.shutterstock.com/api/v2/images/popularQueries
+     *
+     * @param string $language
      * @param string $imageType
      *
      * @return Response
@@ -35,6 +39,8 @@ class Images extends AbstractResource
     }
 
     /**
+     * @link https://developers.shutterstock.com/api/v2/images/recommendations
+     *
      * @param array   $imageIds
      * @param integer $maxItems
      * @param boolean $restrictToSafe
@@ -58,6 +64,8 @@ class Images extends AbstractResource
     }
 
     /**
+     * @link https://developers.shutterstock.com/api/v2/images/similar
+     *
      * @param string  $imageId
      * @param integer $page
      * @param integer $perPage
@@ -86,6 +94,8 @@ class Images extends AbstractResource
     }
 
     /**
+     * @link https://developers.shutterstock.com/api/v2/images/list
+     *
      * @param array  $imageIds
      * @param string $view
      *
@@ -105,6 +115,8 @@ class Images extends AbstractResource
     }
 
     /**
+     * @link https://developers.shutterstock.com/api/v2/images/get
+     *
      * @param string $imageId
      * @param string $view
      *
@@ -121,6 +133,8 @@ class Images extends AbstractResource
     }
 
     /**
+     * @link https://developers.shutterstock.com/api/v2/images/categories
+     *
      * @return Response
      */
     public function getCategories()
