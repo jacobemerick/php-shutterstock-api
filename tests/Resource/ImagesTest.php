@@ -18,7 +18,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGetSearch
      */
-    public function testGetSearch($expectedMethod, $expectedPath, $query)
+    public function testGetSearch($expectedPath, $query)
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
@@ -27,7 +27,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
         $client->getImages()->getSearch($query);
         $lastRequest = $mockHandler->getLastRequest();
 
-        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
+        $this->assertEquals('GET', $lastRequest->getMethod());
         $this->assertEquals($expectedPath, $lastRequest->getUri());
     }
 
@@ -35,17 +35,14 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/search?query=test',
                 'query' => ['query' => 'test'],
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/search',
                 'query' => [],
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/search?query=test&license=editorial',
                 'query' => ['query' => 'test', 'license' => 'editorial'],
             ],
@@ -56,7 +53,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGetSearchPopularQueries
      */
-    public function testGetSearchPopularQueries($expectedMethod, $expectedPath, $language, $imageType)
+    public function testGetSearchPopularQueries($expectedPath, $language, $imageType)
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
@@ -65,7 +62,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
         $client->getImages()->getSearchPopularQueries($language, $imageType);
         $lastRequest = $mockHandler->getLastRequest();
 
-        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
+        $this->assertEquals('GET', $lastRequest->getMethod());
         $this->assertEquals($expectedPath, $lastRequest->getUri());
     }
 
@@ -73,19 +70,16 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/search/popular/queries',
                 'language' => '',
                 'imageType' => '',
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/search/popular/queries?language=zh',
                 'language' => 'zh',
                 'imageType' => '',
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/search/popular/queries?language=th&image_type=illustration',
                 'language' => 'th',
                 'imageType' => 'illustration',
@@ -96,13 +90,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGetRecommendations
      */
-    public function testGetRecommendations(
-        $expectedMethod,
-        $expectedPath,
-        $imageIds,
-        $maxItems,
-        $restrictToSafe
-    ) {
+    public function testGetRecommendations($expectedPath, $imageIds, $maxItems, $restrictToSafe) {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
         $this->setClientWithMockHandler($client, $mockHandler);
@@ -110,7 +98,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
         $client->getImages()->getRecommendations($imageIds, $maxItems, $restrictToSafe);
         $lastRequest = $mockHandler->getLastRequest();
 
-        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
+        $this->assertEquals('GET', $lastRequest->getMethod());
         $this->assertEquals($expectedPath, $lastRequest->getUri());
     }
 
@@ -118,21 +106,18 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/recommendations?id=1&id=2',
                 'imageIds' => [1, 2],
                 'maxItems' => 0,
                 'restrictToSafe' => null,
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/recommendations?id=1&max_items=3',
                 'imageIds' => [1],
                 'maxItems' => 3,
                 'restrictToSafe' => null,
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/recommendations?id=1&id=2&safe=true',
                 'imageIds' => [1, 2],
                 'maxItems' => 0,
@@ -144,15 +129,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGetSimilar
      */
-    public function testGetSimilar(
-        $expectedMethod,
-        $expectedPath,
-        $imageId,
-        $page,
-        $perPage,
-        $sort,
-        $view
-    ) {
+    public function testGetSimilar($expectedPath, $imageId, $page, $perPage, $sort, $view) {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
         $this->setClientWithMockHandler($client, $mockHandler);
@@ -160,7 +137,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
         $client->getImages()->getSimilar($imageId, $page, $perPage, $sort, $view);
         $lastRequest = $mockHandler->getLastRequest();
 
-        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
+        $this->assertEquals('GET', $lastRequest->getMethod());
         $this->assertEquals($expectedPath, $lastRequest->getUri());
     }
 
@@ -168,7 +145,6 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/34/similar',
                 'imageId' => 34,
                 'page' => 0,
@@ -177,7 +153,6 @@ class ImagesTest extends PHPUnit_Framework_TestCase
                 'view' => '',
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/37/similar?page=3&per_page=4&sort=relevance&view=full',
                 'imageId' => 37,
                 'page' => 3,
@@ -186,7 +161,6 @@ class ImagesTest extends PHPUnit_Framework_TestCase
                 'view' => 'full',
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/34/similar?sort=newest',
                 'imageId' => 34,
                 'page' => 0,
@@ -200,7 +174,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGetList
      */
-    public function testGetList($expectedMethod, $expectedPath, array $imageIds, $view)
+    public function testGetList($expectedPath, array $imageIds, $view)
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
@@ -209,7 +183,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
         $client->getImages()->getList($imageIds, $view);
         $lastRequest = $mockHandler->getLastRequest();
 
-        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
+        $this->assertEquals('GET', $lastRequest->getMethod());
         $this->assertEquals($expectedPath, $lastRequest->getUri());
     }
 
@@ -217,19 +191,16 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images?id=1&id=2&id=3',
                 'imageIds' => [1,2,3],
                 'view' => '',
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images?id=1&id=2&id=3&view=minimal',
                 'imageIds' => [1,2,3],
                 'view' => 'minimal',
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images?id=1&view=full',
                 'imageIds' => [1],
                 'view' => 'full',
@@ -240,7 +211,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGetById
      */
-    public function testGetById($expectedMethod, $expectedPath, $imageId, $view)
+    public function testGetById($expectedPath, $imageId, $view)
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
@@ -249,7 +220,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
         $client->getImages()->getById($imageId, $view);
         $lastRequest = $mockHandler->getLastRequest();
 
-        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
+        $this->assertEquals('GET', $lastRequest->getMethod());
         $this->assertEquals($expectedPath, $lastRequest->getUri());
     }
 
@@ -257,13 +228,11 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/1',
                 'imageId' => 1,
                 'view' => '',
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/3?view=minimal',
                 'imageIds' => 3,
                 'view' => 'minimal',
@@ -287,15 +256,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGetLicenses
      */
-    public function testGetLicences(
-        $expectedMethod,
-        $expectedPath,
-        $imageId,
-        $license,
-        $page,
-        $perPage,
-        $sort
-    ) {
+    public function testGetLicences($expectedPath, $imageId, $license, $page, $perPage, $sort) {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
         $this->setClientWithMockHandler($client, $mockHandler);
@@ -303,7 +264,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
         $client->getImages()->getLicenses($imageId, $license, $page, $perPage, $sort);
         $lastRequest = $mockHandler->getLastRequest();
 
-        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
+        $this->assertEquals('GET', $lastRequest->getMethod());
         $this->assertEquals($expectedPath, $lastRequest->getUri());
     }
 
@@ -311,7 +272,6 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/licenses',
                 'imageId' => '',
                 'license' => '',
@@ -320,7 +280,6 @@ class ImagesTest extends PHPUnit_Framework_TestCase
                 'sort' => '',
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/licenses?image_id=213&license=321&page=2&per_page=10&sort=oldest',
                 'imageId' => '213',
                 'license' => '321',
@@ -329,7 +288,6 @@ class ImagesTest extends PHPUnit_Framework_TestCase
                 'sort' => 'oldest',
             ],
             [
-                'expectedMethod' => 'GET',
                 'expectedPath' => 'images/licenses?page=4&per_page=5',
                 'imageId' => '',
                 'license' => '',
@@ -343,15 +301,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataPostLicense
      */
-    public function testPostLicence(
-        $expectedMethod,
-        $expectedPath,
-        $expectedBody,
-        $subscriptionId,
-        $format,
-        $size,
-        $searchId
-    ) {
+    public function testPostLicence($expectedBody, $subscriptionId, $format, $size, $searchId) {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
         $this->setClientWithMockHandler($client, $mockHandler);
@@ -359,8 +309,8 @@ class ImagesTest extends PHPUnit_Framework_TestCase
         $client->getImages()->postLicense($subscriptionId, $format, $size, $searchId);
         $lastRequest = $mockHandler->getLastRequest();
 
-        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
-        $this->assertEquals($expectedPath, $lastRequest->getUri());
+        $this->assertEquals('POST', $lastRequest->getMethod());
+        $this->assertEquals('images/licenses', $lastRequest->getUri());
         $this->assertEquals($expectedBody, $lastRequest->getBody());
     }
 
@@ -368,8 +318,6 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
-                'expectedMethod' => 'POST',
-                'expectedPath' => 'images/licenses',
                 'expectedBody' => '{"subscription_id":"123"}',
                 'subscriptionId' => '123',
                 'format' => '',
@@ -377,8 +325,6 @@ class ImagesTest extends PHPUnit_Framework_TestCase
                 'searchId' =>'',
             ],
             [
-                'expectedMethod' => 'POST',
-                'expectedPath' => 'images/licenses',
                 'expectedBody' => '{"subscription_id":"312","format":"eps","size":"medium","search_id":"452"}',
                 'subscriptionId' => '312',
                 'format' => 'eps',
@@ -386,8 +332,6 @@ class ImagesTest extends PHPUnit_Framework_TestCase
                 'searchId' => '452',
             ],
             [
-                'expectedMethod' => 'POST',
-                'expectedPath' => 'images/licenses',
                 'expectedBody' => '{"subscription_id":"524","size":"huge"}',
                 'subscriptionId' => '524',
                 'format' => '',

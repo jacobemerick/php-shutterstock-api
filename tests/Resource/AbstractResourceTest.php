@@ -42,7 +42,7 @@ class AbstractResourceTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGet
      */
-    public function testGet($expectedPath, $path, $query = null)
+    public function testGet($expectedPath, $path, $query)
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
@@ -62,6 +62,7 @@ class AbstractResourceTest extends PHPUnit_Framework_TestCase
             [
                 'expectedPath' => '/test',
                 'path' => 'test',
+                'query' => null,
             ],
             [
                 'expectedPath' => '/test-with-query?key=value',
@@ -72,9 +73,52 @@ class AbstractResourceTest extends PHPUnit_Framework_TestCase
                 'expectedPath' => '/test-with-query-array?array_key=array_value',
                 'path' => 'test-with-query-array',
                 'query' => ['array_key' => 'array_value'],
-            ]
+            ],
         ];
     }
+
+    /**
+     * @dataProvider dataPost
+     */
+    public function testPost($expectedPath, $expectedBody, $path, $body)
+    {
+        $mockHandler = $this->getMockHandler();
+        $client = $this->getClient();
+        $this->setClientWithMockHandler($client, $mockHandler);
+        $abstractResource = $this->mockAbstractResource($client);
+
+        $abstractResource->post($path, $body);
+        $lastRequest = $mockHandler->getLastRequest();
+
+        $this->assertEquals('POST', $lastRequest->getMethod());
+        $this->assertEquals($expectedPath, $lastRequest->getUri());
+        $this->assertEquals($expectedBody, $lastRequest->getBody());
+    }
+
+    public function dataPost()
+    {
+        return [
+            [
+                'expectedPath' => '/test',
+                'expectedBody' => '',
+                'path' => 'test',
+                'body' => null,
+            ],
+            [
+                'expectedPath' => '/test-with-body',
+                'expectedBody' => '{"key":"value"}',
+                'path' => 'test-with-body',
+                'body' => '{"key":"value"}',
+            ],
+            [
+                'expectedPath' => '/test-with-body-array',
+                'expectedBody' => '{"array_key":"array_value"}',
+                'path' => 'test-with-body-array',
+                'body' => ['array_key' => 'array_value'],
+            ],
+        ];
+    }
+
 
     /**
      * @dataProvider dataBuildRelativeUri
