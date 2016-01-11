@@ -2,6 +2,9 @@
 
 namespace Shutterstock\Api\Resource;
 
+use DateInterval;
+use DateTimeInterface;
+
 class Images extends AbstractResource
 {
 
@@ -213,6 +216,42 @@ class Images extends AbstractResource
     public function postDownloadImage($licenseId)
     {
         return $this->post("licenses/{$licenseId}/downloads");
+    }
+
+    /**
+     * @link https://developers.shutterstock.com/api/v2/images/updated
+     *
+     * @param DateTimeInterface $startDate
+     * @param DateTimeInterface $endDate
+     * @param DateInterval      $dateInterval
+     * @param integer           $page
+     * @param integer           $perPage
+     */
+    public function getUpdatedImages(
+        DateTimeInterface $startDate = null,
+        DateTimeInterface $endDate = null,
+        DateInterval $dateInterval = null,
+        $page = 0,
+        $perPage = 0
+    ) {
+        $query = [];
+        if (!is_null($startDate)) {
+            $query['start_date'] = $startDate->format('c');
+        }
+        if (!is_null($endDate)) {
+            $query['end_date'] = $endDate->format('c');
+        }
+        if (!is_null($dateInterval)) {
+            $query['interval'] = $dateInterval->format('%h HOURS'); // todo support more intervals
+        }
+        if ($page > 0) {
+            $query['page'] = $page;
+        }
+        if ($perPage > 0) {
+            $query['per_page'] = $perPage;
+        }
+
+        return $this->get('updated', $query);
     }
 
     /**

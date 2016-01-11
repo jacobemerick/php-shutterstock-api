@@ -2,6 +2,10 @@
 
 namespace Shutterstock\Api\Resource;
 
+use DateInterval;
+use DateTime;
+use DateTimeInterface;
+use DateTimeZone;
 use PHPUnit_Framework_TestCase;
 use Shutterstock\Api\Client;
 use Shutterstock\Api\MockClientTrait;
@@ -352,5 +356,54 @@ class ImagesTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('POST', $lastRequest->getMethod());
         $this->assertEquals('images/licenses/312/downloads', $lastRequest->getUri());
+    }
+
+    /**
+     * @dataProvider dataGetUpdatedImages
+     */
+    public function testGetUpdatedImages($expectedPath, $startDate, $endDate, $dateInterval, $page, $perPage) {
+        $mockHandler = $this->getMockHandler();
+        $client = $this->getClient();
+        $this->setClientWithMockHandler($client, $mockHandler);
+
+        $client->getImages()->getUpdatedImages($startDate, $endDate, $dateInterval, $page, $perPage);
+        $lastRequest = $mockHandler->getLastRequest();
+
+        $this->assertEquals('GET', $lastRequest->getMethod());
+        $this->assertEquals($expectedPath, $lastRequest->getUri());
+    }
+
+    public function dataGetUpdatedImages()
+    {
+        return [
+            [
+                'expectedPath' => 'images/updated',
+                'startDate' => null,
+                'endDate' => null,
+                'dateInterval' => null,
+                'page' => 0,
+                'perPage' => 0,
+            ],
+            [
+                'expectedPath' => (
+                    'images/updated?' .
+                    'start_date=2016-01-11T17%3A18%3A54-05%3A00&end_date=2016-01-11T17%3A21%3A11-05%3A00&' .
+                    'interval=5%20HOURS&page=2&per_page=10'
+                ),
+                'startDate' => new DateTime('2016-01-11 17:18:54 -05:00'),
+                'endDate' => new DateTime('2016-01-11 17:21:11 -05:00'),
+                'dateInterval' => new DateInterval('PT5H'),
+                'page' => 2,
+                'perPage' => 10,
+            ],
+            [
+                'expectedPath' => 'images/updated?interval=2%20HOURS&page=4',
+                'startDate' => null,
+                'endDate' => null,
+                'dateInterval' => new DateInterval('PT2H'),
+                'page' => 4,
+                'perPage' => 0,
+            ],
+        ];
     }
 }
