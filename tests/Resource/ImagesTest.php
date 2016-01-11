@@ -72,26 +72,26 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     public function dataGetSearchPopularQueries()
     {
         return [
-          [
-              'expectedMethod' => 'GET',
-              'expectedPath' => 'images/search/popular/queries',
-              'language' => '',
-              'imageType' => '',
-          ],
-          [
-              'expectedMethod' => 'GET',
-              'expectedPath' => 'images/search/popular/queries?language=zh',
-              'language' => 'zh',
-              'imageType' => '',
-          ],
-          [
-              'expectedMethod' => 'GET',
-              'expectedPath' => 'images/search/popular/queries?language=th&image_type=illustration',
-              'language' => 'th',
-              'imageType' => 'illustration',
-          ],
-      ];
-   }
+            [
+                'expectedMethod' => 'GET',
+                'expectedPath' => 'images/search/popular/queries',
+                'language' => '',
+                'imageType' => '',
+            ],
+            [
+                'expectedMethod' => 'GET',
+                'expectedPath' => 'images/search/popular/queries?language=zh',
+                'language' => 'zh',
+                'imageType' => '',
+            ],
+            [
+                'expectedMethod' => 'GET',
+                'expectedPath' => 'images/search/popular/queries?language=th&image_type=illustration',
+                'language' => 'th',
+                'imageType' => 'illustration',
+            ],
+        ];
+    }
 
     /**
      * @dataProvider dataGetRecommendations
@@ -200,7 +200,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGetList
      */
-    public function testGetList($expectedMethod, $expectedPath, array $imageIds, $view = '')
+    public function testGetList($expectedMethod, $expectedPath, array $imageIds, $view)
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
@@ -220,6 +220,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
                 'expectedMethod' => 'GET',
                 'expectedPath' => 'images?id=1&id=2&id=3',
                 'imageIds' => [1,2,3],
+                'view' => '',
             ],
             [
                 'expectedMethod' => 'GET',
@@ -239,7 +240,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGetById
      */
-    public function testGetById($expectedMethod, $expectedPath, $imageId, $view = '')
+    public function testGetById($expectedMethod, $expectedPath, $imageId, $view)
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
@@ -259,6 +260,7 @@ class ImagesTest extends PHPUnit_Framework_TestCase
                 'expectedMethod' => 'GET',
                 'expectedPath' => 'images/1',
                 'imageId' => 1,
+                'view' => '',
             ],
             [
                 'expectedMethod' => 'GET',
@@ -280,5 +282,131 @@ class ImagesTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals('GET', $lastRequest->getMethod());
         $this->assertEquals('images/categories', $lastRequest->getUri());
+    }
+
+    /**
+     * @dataProvider dataGetLicenses
+     */
+    public function testGetLicences(
+        $expectedMethod,
+        $expectedPath,
+        $imageId,
+        $license,
+        $page,
+        $perPage,
+        $sort
+    ) {
+        $mockHandler = $this->getMockHandler();
+        $client = $this->getClient();
+        $this->setClientWithMockHandler($client, $mockHandler);
+
+        $client->getImages()->getLicenses($imageId, $license, $page, $perPage, $sort);
+        $lastRequest = $mockHandler->getLastRequest();
+
+        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
+        $this->assertEquals($expectedPath, $lastRequest->getUri());
+    }
+
+    public function dataGetLicenses()
+    {
+        return [
+            [
+                'expectedMethod' => 'GET',
+                'expectedPath' => 'images/licenses',
+                'imageId' => '',
+                'license' => '',
+                'page' => 0,
+                'perPage' => 0,
+                'sort' => '',
+            ],
+            [
+                'expectedMethod' => 'GET',
+                'expectedPath' => 'images/licenses?image_id=213&license=321&page=2&per_page=10&sort=oldest',
+                'imageId' => '213',
+                'license' => '321',
+                'page' => 2,
+                'perPage' => 10,
+                'sort' => 'oldest',
+            ],
+            [
+                'expectedMethod' => 'GET',
+                'expectedPath' => 'images/licenses?page=4&per_page=5',
+                'imageId' => '',
+                'license' => '',
+                'page' => 4,
+                'perPage' => 5,
+                'sort' => '',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataPostLicense
+     */
+    public function testPostLicence(
+        $expectedMethod,
+        $expectedPath,
+        $expectedBody,
+        $subscriptionId,
+        $format,
+        $size,
+        $searchId
+    ) {
+        $mockHandler = $this->getMockHandler();
+        $client = $this->getClient();
+        $this->setClientWithMockHandler($client, $mockHandler);
+
+        $client->getImages()->postLicense($subscriptionId, $format, $size, $searchId);
+        $lastRequest = $mockHandler->getLastRequest();
+
+        $this->assertEquals($expectedMethod, $lastRequest->getMethod());
+        $this->assertEquals($expectedPath, $lastRequest->getUri());
+        $this->assertEquals($expectedBody, $lastRequest->getBody());
+    }
+
+    public function dataPostLicense()
+    {
+        return [
+            [
+                'expectedMethod' => 'POST',
+                'expectedPath' => 'images/licenses',
+                'expectedBody' => '{"subscription_id":"123"}',
+                'subscriptionId' => '123',
+                'format' => '',
+                'size' => '',
+                'searchId' =>'',
+            ],
+            [
+                'expectedMethod' => 'POST',
+                'expectedPath' => 'images/licenses',
+                'expectedBody' => '{"subscription_id":"312","format":"eps","size":"medium","search_id":"452"}',
+                'subscriptionId' => '312',
+                'format' => 'eps',
+                'size' => 'medium',
+                'searchId' => '452',
+            ],
+            [
+                'expectedMethod' => 'POST',
+                'expectedPath' => 'images/licenses',
+                'expectedBody' => '{"subscription_id":"524","size":"huge"}',
+                'subscriptionId' => '524',
+                'format' => '',
+                'size' => 'huge',
+                'searchId' => '',
+            ],
+        ];
+    }
+
+    public function testPostDownloadImage()
+    {
+        $mockHandler = $this->getMockHandler();
+        $client = $this->getClient();
+        $this->setClientWithMockHandler($client, $mockHandler);
+
+        $client->getImages()->postDownloadImage('312');
+        $lastRequest = $mockHandler->getLastRequest();
+
+        $this->assertEquals('POST', $lastRequest->getMethod());
+        $this->assertEquals('images/licenses/312/downloads', $lastRequest->getUri());
     }
 }

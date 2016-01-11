@@ -40,6 +40,26 @@ abstract class AbstractResource
 
     /**
      * @param string $path
+     * @param mixed  $body
+     *
+     * @return Response
+     */
+    public function post($path, $body = null)
+    {
+        $uri = $this->buildRelativeUri($path);
+        $parameters = [];
+        if (!is_null($body)) {
+            if (is_array($body)) {
+                $body = json_encode($body);
+            }
+            $parameters['body'] = $body;
+        }
+
+        return $this->client->request('POST', $uri, $parameters);
+    }
+
+    /**
+     * @param string $path
      *
      * @return string
      */

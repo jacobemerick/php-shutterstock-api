@@ -143,6 +143,79 @@ class Images extends AbstractResource
     }
 
     /**
+     * @link https://developers.shutterstock.com/api/v2/images/licenses
+     *
+     * @param string  $imageId
+     * @param string  $license
+     * @param integer $page
+     * @param integer $perPage
+     * @param string  $sort
+     *
+     * @return Response
+     */
+    public function getLicenses($imageId = '', $license = '', $page = 0, $perPage = 0, $sort = '')
+    {
+        $query = [];
+        if (!empty($imageId)) {
+            $query['image_id'] = $imageId;
+        }
+        if (!empty($license)) {
+            $query['license'] = $license;
+        }
+        if ($page > 0) {
+            $query['page'] = $page;
+        }
+        if ($perPage > 0) {
+            $query['per_page'] = $perPage;
+        }
+        if (!empty($sort)) {
+            $query['sort'] = $sort;
+        }
+
+        return $this->get('licenses', $query);
+    }
+
+    /**
+     * @link https://developers.shutterstock.com/api/v2/images/license
+     *
+     * @param string $subscriptionId
+     * @param string $format
+     * @param string $size
+     * @param string $searchId
+     *
+     * @return Response
+     */
+    public function postLicense($subscriptionId, $format = '', $size = '', $searchId = '')
+    {
+        $params = [
+            'subscription_id' => $subscriptionId,
+        ];
+        if (!empty($format)) {
+            $params['format'] = $format;
+        }
+        if (!empty($size)) {
+            $params['size'] = $size;
+        }
+        if (!empty($searchId)) {
+            $params['search_id'] = $searchId;
+        }
+
+        return $this->post('licenses', $params);
+    }
+
+    /**
+     * @link https://developers.shutterstock.com/api/v2/images/download
+     *
+     * @param string $licenseId
+     *
+     * @return Response
+     */
+    public function postDownloadImage($licenseId)
+    {
+        return $this->post("licenses/{$licenseId}/downloads");
+    }
+
+    /**
      * @return string
      */
     protected function getResourcePath()
