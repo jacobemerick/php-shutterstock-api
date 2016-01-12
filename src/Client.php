@@ -21,8 +21,7 @@ class Client
      */
     public function __construct($clientId, $clientSecret)
     {
-        $stack = new HandlerStack();
-        $stack->setHandler(new CurlHandler());
+        $stack = HandlerStack::create();
         $stack->push(Middleware::mapResponse(function (Response $response) {
             $jsonStream = new JsonStream($response->getBody());
             return $response->withBody($jsonStream);
