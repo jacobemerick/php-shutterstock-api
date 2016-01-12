@@ -42,13 +42,13 @@ class ClientTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataGet
      */
-    public function testGet($expectedUri, $uri, $query, $options)
+    public function testGet($expectedUri, $uri, $query)
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
         $this->setClientWithMockHandler($client, $mockHandler);
 
-        $client->get($uri, $query, $options);
+        $client->get($uri, $query);
         $lastRequest = $mockHandler->getLastRequest();
 
         $this->assertEquals('GET', $lastRequest->getMethod());
@@ -59,10 +59,14 @@ class ClientTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
+                'expectedUri' => 'resource/action',
+                'uri' => 'resource/action',
+                'query' => [],
+            ],
+            [
                 'expectedUri' => 'test?key=value',
                 'uri' => 'test',
                 'query' => ['key' => 'value'],
-                'options' => [],
             ],
         ];
     }
@@ -89,7 +93,17 @@ class ClientTest extends PHPUnit_Framework_TestCase
             [
                 'expectedQuery' => 'key_a=value_a&key_b=value_b',
                 'query' => ['key_a' => 'value_a', 'key_b' => 'value_b'],
-                'separtor' => '&',
+                'separator' => '&',
+            ],
+            [
+                'expectedQuery' => 'key_a=value_a&amp;key_b=value_b',
+                'query' => ['key_a' => 'value_a', 'key_b' => 'value_b'],
+                'separator' => '&amp;',
+            ],
+            [
+                'expectedQuery' => 'key=value_a&key=value_b',
+                'query' => ['key' => ['value_a', 'value_b']],
+                'separator' => '&',
             ],
         ];
     }
@@ -97,13 +111,13 @@ class ClientTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider dataPost
      */
-    public function testPost($expectedUri, $expectedBody, $uri, $body, $options)
+    public function testPost($expectedUri, $expectedBody, $uri, $body)
     {
         $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
         $this->setClientWithMockHandler($client, $mockHandler);
 
-        $client->post($uri, $body, $options);
+        $client->post($uri, $body);
         $lastRequest = $mockHandler->getLastRequest();
 
         $this->assertEquals('POST', $lastRequest->getMethod());
@@ -115,11 +129,16 @@ class ClientTest extends PHPUnit_Framework_TestCase
     {
         return [
             [
+                'expectedUri' => 'resource/action',
+                'expectedBody' => '',
+                'uri' => 'resource/action',
+                'body' => [],
+            ],
+            [
                 'expectedUri' => 'test',
                 'expectedBody' => '{"key":"value"}',
                 'uri' => 'test',
                 'body' => ['key' => 'value'],
-                'options' => [],
             ],
         ];
     }
