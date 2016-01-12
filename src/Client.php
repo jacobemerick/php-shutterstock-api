@@ -3,6 +3,9 @@
 namespace Shutterstock\Api;
 
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Handler\CurlHandler;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Promise\PromiseInterface as Promise;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -18,9 +21,17 @@ class Client
      */
     public function __construct($clientId, $clientSecret)
     {
+        $stack = new HandlerStack();
+        $stack->setHandler(new CurlHandler());
+        $stack->push(Middleware::mapResponse(function (Response $response) {
+            $jsonStream = new JsonStream($response->getBody());
+            return $response->withBody($jsonStream);
+        }));
+
         $guzzle = new Guzzle([
             'base_uri' => 'https://api.shutterstock.com/v2/',
             'auth' => [$clientId, $clientSecret],
+            'handler' => $stack,
         ]);
         $this->guzzle = $guzzle;
     }
