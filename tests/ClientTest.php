@@ -39,46 +39,87 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeEquals($guzzle, 'guzzle', $client);
     }
 
-    public function testGetImages()
-    {
-        $client = $this->getClient();
-        $expectedImageResource = new Resource\Images($client);
-
-        $imageResource = $client->getImages();
-
-        $this->assertInstanceOf(
-            'Shutterstock\Api\Resource\Images',
-            $imageResource
-        );
-        $this->assertEquals($expectedImageResource, $imageResource);
-    }
-
     /**
-     * @dataProvider dataRequests
+     * @dataProvider dataGet
      */
-    public function testRequest($method, $uri, $options, Response $response, $compiledUri)
+    public function testGet($expectedUri, $uri, $query, $options)
     {
-        $mockHandler = $this->getMockHandler($response);
+        $mockHandler = $this->getMockHandler();
         $client = $this->getClient();
         $this->setClientWithMockHandler($client, $mockHandler);
 
-        $testResponse = $client->request($method, $uri, $options);
+        $client->get($uri, $query, $options);
         $lastRequest = $mockHandler->getLastRequest();
 
-        $this->assertSame($response, $testResponse);
-        $this->assertEquals($method, $lastRequest->getMethod());
-        $this->assertEquals($compiledUri, $lastRequest->getUri());
+        $this->assertEquals('GET', $lastRequest->getMethod());
+        $this->assertEquals($expectedUri, (string) $lastRequest->getUri());
     }
 
-    public function dataRequests()
+    public function dataGet()
     {
         return [
             [
-                'method' => 'GET',
-                'uri' => '/test',
-                'options' => ['query' => ['key' => 'value']],
-                'response' => new Response(200, [], json_encode(['key' => 'value'])),
-                'compiled_uri' => '/test?key=value',
+                'expectedUri' => 'test?key=value',
+                'uri' => 'test',
+                'query' => ['key' => 'value'],
+                'options' => [],
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataBuildQuery
+     */
+    public function testBuildQuery($expectedQuery, $query, $separator)
+    {
+        $client = $this->getClient();
+        $queryString = $client->buildQuery($query, $separator);
+
+        $this->assertEquals($expectedQuery, $queryString);
+    }
+
+    public function dataBuildQuery()
+    {
+        return [
+            [
+                'expectedQuery' => 'key=value',
+                'query' => ['key' => 'value'],
+                'separator' => '&',
+            ],
+            [
+                'expectedQuery' => 'key_a=value_a&key_b=value_b',
+                'query' => ['key_a' => 'value_a', 'key_b' => 'value_b'],
+                'separtor' => '&',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider dataPost
+     */
+    public function testPost($expectedUri, $expectedBody, $uri, $body, $options)
+    {
+        $mockHandler = $this->getMockHandler();
+        $client = $this->getClient();
+        $this->setClientWithMockHandler($client, $mockHandler);
+
+        $client->post($uri, $body, $options);
+        $lastRequest = $mockHandler->getLastRequest();
+
+        $this->assertEquals('POST', $lastRequest->getMethod());
+        $this->assertEquals($expectedUri, (string) $lastRequest->getUri());
+        $this->assertEquals($expectedBody, (string) $lastRequest->getBody());
+    }
+
+    public function dataPost()
+    {
+        return [
+            [
+                'expectedUri' => 'test',
+                'expectedBody' => '{"key":"value"}',
+                'uri' => 'test',
+                'body' => ['key' => 'value'],
+                'options' => [],
             ],
         ];
     }
