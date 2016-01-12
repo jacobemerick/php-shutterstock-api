@@ -3,6 +3,7 @@
 namespace Shutterstock\Api;
 
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\Promise\PromiseInterface as Promise;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class Client
@@ -37,6 +38,21 @@ class Client
             $options['query'] = $this->buildQuery($query);
         }
         return $this->guzzle->get($uri, $options);
+    }
+
+    /**
+     * @param string $uri
+     * @param array  $query
+     * @param array  $options
+     *
+     * @return Promise
+     */
+    public function getAsync($uri, array $query = [], array $options = [])
+    {
+        if (!empty($query)) {
+            $options['query'] = $this->buildQuery($query);
+        }
+        return $this->guzzle->getAsync($uri, $options);
     }
 
     /**
@@ -77,5 +93,20 @@ class Client
             $options['body'] = json_encode($body);
         }
         return $this->guzzle->post($uri, $options);
+    }
+
+    /**
+     * @param string $uri
+     * @param array  $body
+     * @param array  $options
+     *
+     * @return Promise
+     */
+    public function postAsync($uri, array $body = [], array $options = [])
+    {
+        if (!empty($body)) {
+            $options['body'] = json_encode($body);
+        }
+        return $this->guzzle->postAsync($uri, $options);
     }
 }

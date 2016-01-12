@@ -48,9 +48,27 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $client = $this->getClient();
         $this->setClientWithMockHandler($client, $mockHandler);
 
-        $client->get($uri, $query);
+        $response = $client->get($uri, $query);
         $lastRequest = $mockHandler->getLastRequest();
 
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
+        $this->assertEquals('GET', $lastRequest->getMethod());
+        $this->assertEquals($expectedUri, (string) $lastRequest->getUri());
+    }
+
+    /**
+     * @dataProvider dataGet
+     */
+    public function testGetAsync($expectedUri, $uri, $query)
+    {
+        $mockHandler = $this->getMockHandler();
+        $client = $this->getClient();
+        $this->setClientWithMockHandler($client, $mockHandler);
+
+        $promise = $client->getAsync($uri, $query);
+        $lastRequest = $mockHandler->getLastRequest();
+
+        $this->assertInstanceOf('GuzzleHttp\Promise\PromiseInterface', $promise);
         $this->assertEquals('GET', $lastRequest->getMethod());
         $this->assertEquals($expectedUri, (string) $lastRequest->getUri());
     }
@@ -117,9 +135,28 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $client = $this->getClient();
         $this->setClientWithMockHandler($client, $mockHandler);
 
-        $client->post($uri, $body);
+        $response = $client->post($uri, $body);
         $lastRequest = $mockHandler->getLastRequest();
 
+        $this->assertInstanceOf('Psr\Http\Message\ResponseInterface', $response);
+        $this->assertEquals('POST', $lastRequest->getMethod());
+        $this->assertEquals($expectedUri, (string) $lastRequest->getUri());
+        $this->assertEquals($expectedBody, (string) $lastRequest->getBody());
+    }
+
+    /**
+     * @dataProvider dataPost
+     */
+    public function testPostAsync($expectedUri, $expectedBody, $uri, $body)
+    {
+        $mockHandler = $this->getMockHandler();
+        $client = $this->getClient();
+        $this->setClientWithMockHandler($client, $mockHandler);
+
+        $promise = $client->postAsync($uri, $body);
+        $lastRequest = $mockHandler->getLastRequest();
+
+        $this->assertInstanceOf('GuzzleHttp\Promise\PromiseInterface', $promise);
         $this->assertEquals('POST', $lastRequest->getMethod());
         $this->assertEquals($expectedUri, (string) $lastRequest->getUri());
         $this->assertEquals($expectedBody, (string) $lastRequest->getBody());
