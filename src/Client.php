@@ -4,7 +4,6 @@ namespace Shutterstock\Api;
 
 use GuzzleHttp\Client as Guzzle;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\Middleware;
 use GuzzleHttp\Promise\PromiseInterface as Promise;
 use Psr\Http\Message\ResponseInterface as Response;

@@ -3,6 +3,8 @@
 namespace Shutterstock\Api;
 
 use GuzzleHttp\Client as Guzzle;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit_Framework_TestCase;
 
@@ -29,6 +31,29 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
         $this->assertAttributeInstanceOf(
             'GuzzleHttp\Client',
+            'guzzle',
+            $client
+        );
+    }
+
+    public function testConstructSetsJsonMiddleware()
+    {
+        $stack = HandlerStack::create();
+        $stack->push(Middleware::mapResponse(function (Response $response) {
+            $jsonStream = new JsonStream($response->getBody());
+            return $response->withBody($jsonStream);
+        }));
+
+        $guzzle = new Guzzle([
+            'base_uri' => 'https://api.shutterstock.com/v2/',
+            'auth' => ['client_id', 'client_secret'],
+            'handler' => $stack,
+        ]);
+
+        $client = $this->getClient();
+
+        $this->assertAttributeEquals(
+            $guzzle,
             'guzzle',
             $client
         );
