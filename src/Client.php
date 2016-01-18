@@ -99,7 +99,7 @@ class Client
     public function post($uri, array $body = [], array $options = [])
     {
         if (!empty($body)) {
-            $options['body'] = json_encode($body);
+            $options['json'] = $body;
         }
         return $this->guzzle->post($uri, $options);
     }
@@ -114,7 +114,7 @@ class Client
     public function postAsync($uri, array $body = [], array $options = [])
     {
         if (!empty($body)) {
-            $options['body'] = json_encode($body);
+            $options['json'] = $body;
         }
         return $this->guzzle->postAsync($uri, $options);
     }
