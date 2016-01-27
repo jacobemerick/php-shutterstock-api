@@ -2,7 +2,7 @@
     "name": "shutterstock/api",
     "license": "MIT",
     "require": {
-        "php": ">=5.4",
+        "php": ">=5.5",
         "guzzlehttp/guzzle": "^6.1",
         "psr/log": "^1.0"
     },
