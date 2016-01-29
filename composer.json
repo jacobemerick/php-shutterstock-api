@@ -1,6 +1,6 @@
 {
     "name": "shutterstock/api",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "require": {
         "php": ">=5.6",
         "guzzlehttp/guzzle": "^6.1",
