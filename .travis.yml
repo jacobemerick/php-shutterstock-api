@@ -11,7 +11,13 @@ install:
   - composer self-update
   - composer update --no-interaction
 
-script: vendor/bin/phpunit --coverage-clover build/logs/clover.xml
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+script:
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_script:
-  - bash bin/codeclimate.sh
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
