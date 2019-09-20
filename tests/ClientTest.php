@@ -8,7 +8,7 @@ use GuzzleHttp\Middleware;
 use GuzzleHttp\Psr7\Response;
 use PHPUnit\Framework\TestCase;
 
-class ClientTest extends PHPUnit\Framework\TestCase
+class ClientTest extends TestCase
 {
 
     use MockClientTrait,
